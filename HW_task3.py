@@ -1,18 +1,23 @@
-with open(r'Folder_task3/1.txt', 'r', encoding='utf-8') as file1:
-    with open(r'Folder_task3/2.txt', 'r', encoding='utf-8') as file2:
-        with open(r'Folder_task3/3.txt', 'r', encoding='utf-8') as file3:
-            data = {
-                    '1.txt': [i for i in file1.readlines()],
-                    '2.txt': [i for i in file2.readlines()],
-                    '3.txt': [i for i in file3.readlines()],
-                    }
-            sorted_keys = sorted(data, key=lambda x: len(data[x]))
+import os
+import re
 
-with open(r'Folder_task3/res.txt', 'w', encoding='utf-8') as file:
-    for i in sorted_keys:
-        file.write(f"{i}\n{len(data[i])}\n")
-        for j in data[i]:
-            file.write(j)
-        file.write('\n')
 
+def union_files(directory: str):
+    union_dict = dict()
+    for file in os.listdir(directory):
+        if re.match(r'\w+.txt', file) and file != 'res.txt':
+            path = f"{directory}/{file}"
+            with open(path, 'r', encoding='utf-8') as inner_file:
+                content_file = [i for i in inner_file.readlines()]
+                union_dict.update({file: (len(content_file), content_file)})
+    sorted_keys = sorted(union_dict, key=lambda x: union_dict[x][0])
+    path_for_write = f"{directory}/res.txt"
+    with open(path_for_write, 'w', encoding='utf-8') as file:
+        for i in sorted_keys:
+            file.write(f"{i}\n{union_dict[i][0]}\n")
+            for j in union_dict[i][1]:
+                file.write(j)
+            file.write('\n')
+
+union_files('Folder_task3')
 # Результат запуска программы в файле res.txt репозитория Folder_task3
